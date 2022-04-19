@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.iposprinter_plugin">
+    <application>
+        <service android:name="com.iposprinter.iposprinterservice.PrintService"/>
+    </application>
+</manifest>
