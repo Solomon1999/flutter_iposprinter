@@ -1,12 +1,10 @@
-package com.iposprinter_plugin;
+package com.iposprinter.iposprinter;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,14 +12,13 @@ import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 
-import com.iposprinter.ThreadPoolManager;
 import com.iposprinter.iposprinterservice.IPosPrinterCallback;
 import com.iposprinter.iposprinterservice.IPosPrinterService;
-import com.iposprinter.ThreadPoolManager;
+import com.iposprinter.iposprinterservice.ThreadPoolManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,26 +26,21 @@ import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.embedding.engine.plugins.service.ServiceAware;
-import io.flutter.embedding.engine.plugins.service.ServicePluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.EventChannel.StreamHandler;
-import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * PrintingPlugin
  */
-public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, ServiceAware {
+public class IPosPrinterPlugin implements FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler  {
   private static final String TAG = "IPOSPrinterPlugin";
-  private static final String NAMESPACE = "iposprinter_plugin";
+  private static final String NAMESPACE = "iposprinter";
 
   private Context context;
+  private MethodChannel channel;
   private Object initializationLock = new Object();
 
   private FlutterPluginBinding pluginBinding;
@@ -57,37 +49,7 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
   private Application application;
   private Activity activity;
 
-  private MethodChannel channel;
-  private EventChannel stateChannel;
-  private EventChannel.EventSink statusSink;
-
-  private ServiceConnection printerService;
   private IPosPrinterService iPosPrinterService;
-
-
-  /*Define state broadcast*/
-  private final String PRINTER_NORMAL_ACTION = "com.iposprinter.iposprinterservice.NORMAL_ACTION";
-  private final String PRINTER_PAPERLESS_ACTION = "com.iposprinter.iposprinterservice.PAPERLESS_ACTION";
-  private final String PRINTER_PAPEREXISTS_ACTION = "com.iposprinter.iposprinterservice.PAPEREXISTS_ACTION";
-  private final String PRINTER_THP_HIGHTEMP_ACTION = "com.iposprinter.iposprinterservice.THP_HIGHTEMP_ACTION";
-  private final String PRINTER_THP_NORMALTEMP_ACTION = "com.iposprinter.iposprinterservice.THP_NORMALTEMP_ACTION";
-  private final String PRINTER_MOTOR_HIGHTEMP_ACTION = "com.iposprinter.iposprinterservice.MOTOR_HIGHTEMP_ACTION";
-  private final String PRINTER_BUSY_ACTION = "com.iposprinter.iposprinterservice.BUSY_ACTION";
-  private final String PRINTER_CURRENT_TASK_PRINT_COMPLETE_ACTION = "com.iposprinter.iposprinterservice.CURRENT_TASK_PRINT_COMPLETE_ACTION";
-  private final String GET_CUST_PRINTAPP_PACKAGENAME_ACTION = "android.print.action.CUST_PRINTAPP_PACKAGENAME";
-
-  /*Define Messages*/
-  private final int MSG_TEST = 1;
-  private final int MSG_IS_NORMAL = 2;
-  private final int MSG_IS_BUSY = 3;
-  private final int MSG_PAPER_LESS = 4;
-  private final int MSG_PAPER_EXISTS = 5;
-  private final int MSG_THP_HIGH_TEMP = 6;
-  private final int MSG_THP_TEMP_NORMAL = 7;
-  private final int MSG_MOTOR_HIGH_TEMP = 8;
-  private final int MSG_MOTOR_HIGH_TEMP_INIT_PRINTER = 9;
-  private final int MSG_CURRENT_TASK_PRINT_COMPLETE = 10;
-
 
   public static void registerWith(Registrar registrar) {
     final IPosPrinterPlugin instance = new IPosPrinterPlugin();
@@ -95,9 +57,7 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
     Activity activity = registrar.activity();
     Application application = null;
     instance.setup(registrar.messenger(), application, activity, registrar, null);
-  }
 
-  public IPosPrinterPlugin() {
   }
 
   private void setup(final BinaryMessenger messenger,
@@ -112,121 +72,41 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
       this.context = application;
       channel = new MethodChannel(messenger, NAMESPACE + "/methods");
       channel.setMethodCallHandler(this);
-//      stateChannel = new EventChannel(messenger, NAMESPACE + "/state");
-//      stateChannel.setStreamHandler(stateStreamHandler);
       initializeService();
     }
   }
-
-//  private final StreamHandler stateStreamHandler = new StreamHandler() {
-//    private final BroadcastReceiver IPosPrinterStatusListener = new BroadcastReceiver() {
-//      @Override
-//      public void onReceive(Context context, Intent intent) {
-//        String action = intent.getAction();
-//        if (action == null) {
-//          Log.d(TAG, "IPosPrinterStatusListener onReceive action = null");
-//          return;
-//        }
-//        Log.d(TAG, "IPosPrinterStatusListener action = " + action);
-//        if (action.equals(PRINTER_NORMAL_ACTION)) {
-//          statusSink.success(MSG_IS_NORMAL);
-//        } else if (action.equals(PRINTER_PAPERLESS_ACTION)) {
-//          statusSink.error("ERROR", "MSG_PAPER_LESS", null);
-//        } else if (action.equals(PRINTER_BUSY_ACTION)) {
-//          statusSink.error("ERROR", "MSG_IS_BUSY", null);
-//        } else if (action.equals(PRINTER_PAPEREXISTS_ACTION)) {
-//          statusSink.success(MSG_PAPER_EXISTS);
-//        } else if (action.equals(PRINTER_THP_HIGHTEMP_ACTION)) {
-//          statusSink.error("ERROR", "MSG_THP_HIGH_TEMP", null);
-//        } else if (action.equals(PRINTER_THP_NORMALTEMP_ACTION)) {
-//          statusSink.success(MSG_THP_TEMP_NORMAL);
-//        } else if (action.equals(PRINTER_MOTOR_HIGHTEMP_ACTION)) {
-//          //At this time, the current task will continue to print.
-//          // After completing the current task, please wait for more than 2 minutes to continue the next printing task.
-//          statusSink.error("ERROR", "MSG_MOTOR_HIGH_TEMP", null);
-//        } else if (action.equals(PRINTER_CURRENT_TASK_PRINT_COMPLETE_ACTION)) {
-//          statusSink.success(true);
-//        } else if (action.equals(GET_CUST_PRINTAPP_PACKAGENAME_ACTION)) {
-//          String mPackageName = null;
-//          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
-//            mPackageName = intent.getPackage();
-//          }
-//          Log.d(TAG, "*******GET_CUST_PRINTAPP_PACKAGENAME_ACTION：" + action + "*****mPackageName:" + mPackageName);
-//
-//        } else {
-//          statusSink.success("MSG_TEST");
-//        }
-//      }
-//    };
-//
-//    @Override
-//    public void onListen(Object o, EventChannel.EventSink eventSink) {
-//      statusSink = eventSink;
-//      IntentFilter printerStatusFilter = new IntentFilter();
-//      printerStatusFilter.addAction(PRINTER_NORMAL_ACTION);
-//      printerStatusFilter.addAction(PRINTER_PAPERLESS_ACTION);
-//      printerStatusFilter.addAction(PRINTER_PAPEREXISTS_ACTION);
-//      printerStatusFilter.addAction(PRINTER_THP_HIGHTEMP_ACTION);
-//      printerStatusFilter.addAction(PRINTER_THP_NORMALTEMP_ACTION);
-//      printerStatusFilter.addAction(PRINTER_MOTOR_HIGHTEMP_ACTION);
-//      printerStatusFilter.addAction(PRINTER_BUSY_ACTION);
-//      printerStatusFilter.addAction(GET_CUST_PRINTAPP_PACKAGENAME_ACTION);
-//      context.registerReceiver(IPosPrinterStatusListener, printerStatusFilter);
-//
-//    }
-//
-//    @Override
-//    public void onCancel(Object o) {
-//      statusSink = null;
-//      context.unregisterReceiver(IPosPrinterStatusListener);
-//    }
-//  };
 
   /**
    * Binding service instance
    */
   private ServiceConnection createPrinterServiceConnection() {
-    Log.i(TAG, "Creating Service Connection" + "\n");
     return new ServiceConnection() {
 
       @Override
       public void onServiceConnected(ComponentName componentName, IBinder service) {
-        Log.i(TAG, "Printer Service Started" + "\n");
         iPosPrinterService = IPosPrinterService.Stub.asInterface(service);
       }
 
       @Override
       public void onServiceDisconnected(ComponentName componentName) {
-        Log.i(TAG, "Printer Service Stopped" + "\n");
         iPosPrinterService = null;
       }
     };
   }
 
   private void initializeService() {
-    Log.i(TAG, "Initializing service" + "\n");
-    printerService = createPrinterServiceConnection();
-    try {
-      Intent intent = new Intent();
-      intent.setPackage("com.iposprinter.iposprinterservice");
-      intent.setAction("com.iposprinter.iposprinterservice.IPosPrintService");
-      boolean isBound = context.bindService(intent, printerService, Context.BIND_ADJUST_WITH_ACTIVITY | Context.BIND_AUTO_CREATE);
-//    context.startService(intent);
-      Log.i(TAG, "Initialised Service Intent: "+isBound);
-    } catch (Exception exception) {
-      Log.e(TAG, "Error during Initialisation: "+exception.getMessage());
-    }
+    createPrinterServiceConnection();
+    Intent intent = new Intent();
+    intent.setPackage("com.iposprinter.iposprinterservice");
+    intent.setAction("com.iposprinter.iposprinterservice.IPosPrintService");
   }
 
   private void detach() {
-    Log.i(TAG, "detach iposprinter plugin");
-    context.unbindService(printerService);
-    channel.setMethodCallHandler(null);
-    channel = null;
-    stateChannel.setStreamHandler(null);
+    Log.i(TAG, "detach");
     context = null;
     activityBinding = null;
-    stateChannel = null;
+    channel.setMethodCallHandler(null);
+    channel = null;
     application = null;
   }
 
@@ -239,35 +119,30 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
       return;
     }
 
-    Log.i(TAG, "Attempting to run task: "+call.method);
     ThreadPoolManager.getInstance().executeTask(new Runnable() {
       @Override
       public void run() {
 
         try {
-          IPosPrinterCallback callback = new IPosPrinterCallback.Stub() {
+          IPosPrinterCallback.Stub callback = new IPosPrinterCallback.Stub() {
             @Override
             public void onRunResult(final boolean isSuccess) {
-              Log.i(TAG, "Running result from printAction");
-//               if (!result.) {
-                 if (isSuccess) {
-                   result.success(true);
-                 } else {
-                   result.error("ERROR", null, null);
-                 }
-//               }
+              // if (!callbackContext.isFinished()) {
+              if (isSuccess) {
+                result.success(true);
+              } else {
+                result.error("ERROR", null, null);
+              }
             }
 
             @Override
             public void onReturnString(final String value) {
-              Log.i(TAG, "Returning result string from printAction: "+value);
               result.success(value);
             }
           };
 
-          switch (call.method) {
+          switch (call.method.toLowerCase()) {
             case "printerStatus":
-              Log.i(TAG, "Get Printer Status");
               result.success(iPosPrinterService.getPrinterStatus());
               break;
 
@@ -275,7 +150,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
             // Please check the printer status when using it.
             // Please wait for PRINTER_IS_BUSY.
             case "printerInit":
-              Log.i(TAG, "Initialise Printer");
               iPosPrinterService.printerInit(callback);
               break;
 
@@ -320,7 +194,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
             // content,
             // and the data sent to the printer at this time is all 0x00)
             case "printBlankLines":
-              Log.i(TAG, "Print Blank Lines with arguments: "+call.arguments());
               iPosPrinterService.printBlankLines(call.argument("lines"), call.argument
                       ("lineHeight"), callback);
               break;
@@ -350,36 +223,18 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
             // Print Column Text
             // Print a row of the table, you can specify the column width and alignment
-<<<<<<< HEAD
-            // Print a row of the table, you can specify the column width and alignment
-            // Params:
-            // colsTextArr – an array of text strings for each column
-            // colsWidthArr – the width array of each column. The total width cannot be greater than
-            // ((384 / fontsize) << 1)-(number of columns + 1) (calculated in English characters, each Chinese character occupies two English characters, and each width is greater than 0),
-            // colsAlign – Alignment of each column (0 is left, 1 is center, 2 is right)
-            // isContinuousPrint – whether to continue printing the table
-            // 1: continue printing
-            // 0: do not continue printing
-            // Note: The array length of the three parameters should be the same, if the width of colsTextArr[i] is greater than colsWidthArr[i], the text wraps
             case "printColumnsText":
-              iPosPrinterService.printColumnsText(ArrayToStringArray(call.argument
-                      ("colsTextArray")), ArrayToIntArray(call.argument
-                      ("colsWidthArray")), ArrayToIntArray(call.argument
+              iPosPrinterService.printColumnsText(jsonArrayToStringArray((JSONArray) call.argument
+                      ("colsTextArray")), jsonArrayToIntArray((JSONArray) call.argument
+                      ("colsWidthArray")), jsonArrayToIntArray((JSONArray) call.argument
                       ("colsAlignmentArray")), call.argument("isContinuousPrint"), callback);
-=======
-            case "printColumnsText":
-              iPosPrinterService.printColumnsText(call.argument
-                      ("colsTextArray"), call.argument
-                      ("colsWidthArray"), call.argument
-                      ("colsAlignmentArray"), call.argument("isContinuousPrint"), callback);
->>>>>>> d393a8c01257da03feef2c9b26c7b920a5207a71
               break;
 
             // Print a Bitmap Image
             // Alignment 0--left, 1--center, 2--right, center by default
             // Bitmap size, the incoming size range is 1~16, and the default selection is 10 if it exceeds the range. Unit: 24bit
             case "printBitmap":
-              byte[] bytes = call.argument("imageBytesArray");
+              byte[] bytes = jsonArrayToByteArray((JSONArray) call.argument("imageBytesArray"));
               iPosPrinterService.printBitmap(call.argument("alignment"), call.argument
                               ("imageSize"), BitmapFactory.decodeByteArray(bytes, 0, bytes.length),
                       callback);
@@ -406,14 +261,14 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
             // Print Raw Data
             case "printRawData":
-              iPosPrinterService.printRawData(call.argument
-                      ("byteData"), callback);
+              iPosPrinterService.printRawData(jsonArrayToByteArray((JSONArray) call.argument
+                      ("byteData")), callback);
               break;
 
             // Printing with ESC/POS commands
             case "sendUserCMDData":
-              iPosPrinterService.sendUserCMDData(call.argument
-                      ("byteData"), callback);
+              iPosPrinterService.sendUserCMDData(jsonArrayToByteArray((JSONArray) call.argument
+                      ("byteData")), callback);
               break;
 
             // Execute printing After executing each printing function method
@@ -428,15 +283,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
             case "printData":
               printData(call.argument("printData"), callback);
 
-            // Run Test Printer Functions
-            case "testPrint":
-              iPosPrinterService.setPrinterPrintAlignment(0, callback);
-              iPosPrinterService.printQRCode("http://www.baidu.com\n", 2, 1, callback);
-              iPosPrinterService.printBlankLines(1, 15, callback);
-              iPosPrinterService.setPrinterPrintAlignment(1, callback);
-              iPosPrinterService.printQRCode("http://www.baidu.com\n", 3, 0, callback);
-
-
             default:
               result.notImplemented();
           }
@@ -448,85 +294,69 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
     });
   }
 
-//  private byte[] ArrayToByteArray(Array data) throws JSONException {
-//    byte[] bytes = new byte[data.length()];
-//    for (int i = 0; i < data.length(); i++) {
-//      bytes[i] = (byte) (((int) data.get(i)) & 0xFF);
-//    }
-//    return bytes;
-//  }
-//
-<<<<<<< HEAD
-  private String[] ArrayToStringArray(ArrayList data) throws JSONException {
-    String[] strings = new String[data.size()];
-    for(int i = 0; i < data.size(); i++) {
-      strings[i] = data.get(i).toString();
+  private byte[] jsonArrayToByteArray(JSONArray data) throws JSONException {
+    byte[] bytes = new byte[data.length()];
+    for (int i = 0; i < data.length(); i++) {
+      bytes[i] = (byte) (((int) data.get(i)) & 0xFF);
+    }
+    return bytes;
+  }
+
+  private String[] jsonArrayToStringArray(JSONArray data) throws JSONException {
+    String[] strings = new String[data.length()];
+    for(int i = 0; i < data.length(); i++) {
+      strings[i] = data.getString(i);
     }
     return strings;
   }
 
-  private int[] ArrayToIntArray(ArrayList data) throws JSONException {
-    int[] numbers = new int[data.size()];
-    for(int i = 0; i < data.size(); i++) {
-      numbers[i] = (int) data.get(i);
+  private int[] jsonArrayToIntArray(JSONArray data) throws JSONException {
+    int[] numbers = new int[data.length()];
+    for(int i = 0; i < data.length(); i++) {
+      numbers[i] = data.getInt(i);
     }
     return numbers;
   }
-=======
-//  private String[] ArrayToStringArray(JSONArray data) throws JSONException {
-//    String[] strings = new String[data.length()];
-//    for(int i = 0; i < data.length(); i++) {
-//      strings[i] = data.getString(i);
-//    }
-//    return strings;
-//  }
-
-//  private int[] ArrayToIntArray(JSONArray data) throws JSONException {
-//    int[] numbers = new int[data.length()];
-//    for(int i = 0; i < data.length(); i++) {
-//      numbers[i] = data.getInt(i);
-//    }
-//    return numbers;
-//  }
->>>>>>> d393a8c01257da03feef2c9b26c7b920a5207a71
 
   public void printData(List<Map<String, Object>> data, IPosPrinterCallback callback) {
-    try {
-      for (Map<String, Object> line : data) {
-        String type = (String) line.get("type");
-        android.util.Log.i(TAG, type);
-        if (type.equals("image")) {
-          android.util.Log.i(TAG, "Printing Image");
+    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          for (Map<String, Object> line : data) {
+            String type = (String) line.get("type");
+            android.util.Log.i(TAG, type);
+            if (type.equals("image")) {
+              android.util.Log.i(TAG, "Printing Image");
 //                            AssetManager assetManager = getAssets();
-          Bitmap bt;
+              Bitmap bt;
 //                            InputStream imageFile = assetManager.open("logo2.jpg");
-          byte [] imageBytes = (byte[]) line.get("image");
-          bt = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-          iPosPrinterService.printBitmap(1, 12, bt, callback);
-        } else {
-          iPosPrinterService.printSpecifiedTypeText((String) line.get("text"), "ST", (Integer) line.get("size"), callback);
+              byte [] imageBytes = (byte[]) line.get("image");
+              bt = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+              iPosPrinterService.printBitmap(1, 12, bt, callback);
+            } else {
+              iPosPrinterService.printSpecifiedTypeText((String) line.get("text"), "ST", (Integer) line.get("size"), callback);
+            }
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    });
   }
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    Log.i(TAG, "Attaching Plugin to Engine");
     pluginBinding = binding;
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    Log.i(TAG, "Detaching Plugin from Engine");
     pluginBinding = null;
   }
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-    Log.i(TAG, "Attaching Plugin to Activity");
     activityBinding = binding;
     setup(
             pluginBinding.getBinaryMessenger(),
@@ -548,18 +378,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
   @Override
   public void onDetachedFromActivity() {
-    Log.i(TAG, "Detaching Plugin from Activity");
     detach();
-  }
-
-  @Override
-  public void onAttachedToService(@NonNull ServicePluginBinding binding) {
-    Log.i(TAG, "Currently attached to Service: " + binding.getService().getPackageName() + "\n");
-  }
-
-  @Override
-  public void onDetachedFromService() {
-    Log.i(TAG, "Detached from Service" + "\n");
-    iPosPrinterService = null;
   }
 }

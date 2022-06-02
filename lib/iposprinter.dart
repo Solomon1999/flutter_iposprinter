@@ -228,7 +228,11 @@ class IPOSPrinter {
           {int imageSize: 12, int alignment: 1}) async =>
       await _channel.invokeMethod('printBarCode', {
         'barcodeString': barcodeString,
-        'imageSize': (imageSize > 16 ) ? 16 : (imageSize < 1) ? 1 : imageSize,
+        'imageSize': (imageSize > 16)
+            ? 16
+            : (imageSize < 1)
+                ? 1
+                : imageSize,
         'alignment': alignment
       });
 
@@ -239,7 +243,11 @@ class IPOSPrinter {
           int alignment: 1}) async =>
       await _channel.invokeMethod('printQRCode', {
         'StringData': qrCodeString,
-        'moduleSize': (imageSize > 16 ) ? 16 : (imageSize < 1) ? 1 : imageSize,
+        'moduleSize': (imageSize > 16)
+            ? 16
+            : (imageSize < 1)
+                ? 1
+                : imageSize,
         "errorCorrectionLevel": errorCorrectionLevel,
         'alignment': alignment,
       });
@@ -288,12 +296,14 @@ class IPOSPrintJob {
         case PrinterStatus.PRINTER_BLUETOOTH_OFF:
           print("bluetooth device state: off");
           isConnected = false;
-          bluetoothError = "Device Bluetooth is switched off. Please turn it on";
+          bluetoothError =
+              "Device Bluetooth is switched off. Please turn it on";
           break;
         case PrinterStatus.PRINTER_BLUETOOTH_TURNING_OFF:
           print("bluetooth device state: turning off");
           isConnected = false;
-          bluetoothError = "Device Bluetooth is switched off. Please turn it on";
+          bluetoothError =
+              "Device Bluetooth is switched off. Please turn it on";
           break;
         case PrinterStatus.PRINTER_PAPER_EXISTS:
           print("Paper present in the POS Printer");
@@ -321,12 +331,15 @@ class IPOSPrintJob {
         case PrinterStatus.PRINTER_THP_HIGH_TEMPERATURE:
           print("POS Printer has high temperature");
           canPrint = false;
-          printerError = "POS Printer has temperature. Please allow to cool off.";
+          printerError =
+              "POS Printer has temperature. Please allow to cool off.";
           break;
         case PrinterStatus.PRINTER_MOTOR_HIGH_TEMPERATURE:
-          print("POS Printer temperature is high. Please wait for 1 minute to cool off");
+          print(
+              "POS Printer temperature is high. Please wait for 1 minute to cool off");
           canPrint = false;
-          printerError = "POS Printer has temperature. Please allow to cool off.";
+          printerError =
+              "POS Printer has temperature. Please allow to cool off.";
           break;
         case PrinterStatus.PRINTER_CURRENT_TASK_PRINT_COMPLETE:
           print("POS Printer has finished priting the job");

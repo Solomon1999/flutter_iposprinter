@@ -19,12 +19,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const HomeWidget()
-    );
+    return MaterialApp(home: const HomeWidget());
   }
 }
 
@@ -137,96 +134,101 @@ class _HomeWidgetState extends State<HomeWidget> {
       ),
       body: Center(
         child: TextButton(
-            onPressed: (isConnected) ? () async {
-              imageData = await getImageFileFromAssets();
-              try {
-                  var status = await posPrinter.printerStatus();
-                  print("Printer Status: $status");
-                  await posPrinter.printStyledFormatText(
-                      "\u20A6 ₦@Hello my people", fontSize: 16, align: 0);
-                  await posPrinter.printStyledFormatText(
-                      "\u20A6 €@\$#~Hello my people", fontSize: 24, align: 1);
-                  await posPrinter.printStyledFormatText(
-                      "\u20A6 Hello my people", fontSize: 32, align: 2);
-                  await posPrinter.printStyledFormatText(
-                      "\u20A6 Hello my people", fontSize: 48, align: 0);
-                  await posPrinter.printQRCode("ordereat.com");
-                  await posPrinter.printLineDemarcation();
-                  // }
-                } catch (error) {
-                  print(error.toString());
-                  if (error is PlatformException) {
-                    showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.grey[900],
-                        builder: (context) {
-                          return Wrap(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text(error.message ??
-                                              "Error from printer", style: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .bodyText2!
-                                              .copyWith(color: Colors.white),)
-                                      ),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            posPrinter.initPrinter();
-                                          },
-                                          child: const Text("Retry")
-                                      )
-                                    ],
-                                  )
-                              )
-                            ],
-                          );
-                        });
-                  } else {
-                    print("Error: ${error.toString()}");
-                    showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.grey[900],
-                        builder: (context) {
-                          return Wrap(
-                            children: [
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                          child: Text(
-                                            "Error Printing Data", style: Theme
-                                              .of(context)
-                                              .textTheme
-                                              .bodyText2!
-                                              .copyWith(color: Colors.white),)
-                                      ),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text("Retry")
-                                      )
-                                    ],
-                                  )
-                              )
-                            ],
-                          );
-                        });
+            onPressed: (isConnected)
+                ? () async {
+                    imageData = await getImageFileFromAssets();
+                    try {
+                      var status = await posPrinter.printerStatus();
+                      print("Printer Status: $status");
+                      await posPrinter.printStyledFormatText(
+                          "\u20A6 ₦@Hello my people",
+                          fontSize: 16,
+                          align: 0);
+                      await posPrinter.printStyledFormatText(
+                          "\u20A6 €@\$#~Hello my people",
+                          fontSize: 24,
+                          align: 1);
+                      await posPrinter.printStyledFormatText(
+                          "\u20A6 Hello my people",
+                          fontSize: 32,
+                          align: 2);
+                      await posPrinter.printStyledFormatText(
+                          "\u20A6 Hello my people",
+                          fontSize: 48,
+                          align: 0);
+                      await posPrinter.printQRCode("ordereat.com");
+                      await posPrinter.printLineDemarcation();
+                      // }
+                    } catch (error) {
+                      print(error.toString());
+                      if (error is PlatformException) {
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.grey[900],
+                            builder: (context) {
+                              return Wrap(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                            error.message ??
+                                                "Error from printer",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2!
+                                                .copyWith(color: Colors.white),
+                                          )),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                posPrinter.initPrinter();
+                                              },
+                                              child: const Text("Retry"))
+                                        ],
+                                      ))
+                                ],
+                              );
+                            });
+                      } else {
+                        print("Error: ${error.toString()}");
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.grey[900],
+                            builder: (context) {
+                              return Wrap(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                            "Error Printing Data",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2!
+                                                .copyWith(color: Colors.white),
+                                          )),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("Retry"))
+                                        ],
+                                      ))
+                                ],
+                              );
+                            });
+                      }
+                    }
                   }
-                }
-
-            } : null,
-            child: const Text("Test Print")
-        ),
+                : null,
+            child: const Text("Test Print")),
       ),
     );
   }
