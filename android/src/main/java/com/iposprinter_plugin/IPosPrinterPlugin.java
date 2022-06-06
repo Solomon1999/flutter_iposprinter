@@ -2,11 +2,9 @@ package com.iposprinter_plugin;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,14 +12,10 @@ import android.os.IBinder;
 
 import androidx.annotation.NonNull;
 
-import com.iposprinter.ThreadPoolManager;
-import com.iposprinter.iposprinterservice.IPosPrinterCallback;
-import com.iposprinter.iposprinterservice.IPosPrinterService;
-import com.iposprinter.ThreadPoolManager;
+import com.iposprinter_plugin.iposprinterservice.IPosPrinterCallback;
+import com.iposprinter_plugin.iposprinterservice.IPosPrinterService;
+import com.iposprinter_plugin.iposprinterservice.ThreadPoolManager;
 
-import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +27,6 @@ import io.flutter.embedding.engine.plugins.service.ServiceAware;
 import io.flutter.embedding.engine.plugins.service.ServicePluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.EventChannel.StreamHandler;
-import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -62,7 +54,7 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
   private EventChannel.EventSink statusSink;
 
   private ServiceConnection printerService;
-  private IPosPrinterService iPosPrinterService;
+  private com.iposprinter_plugin.iposprinterservice.IPosPrinterService iPosPrinterService;
 
 
   /*Define state broadcast*/
@@ -350,29 +342,11 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 
             // Print Column Text
             // Print a row of the table, you can specify the column width and alignment
-<<<<<<< HEAD
-            // Print a row of the table, you can specify the column width and alignment
-            // Params:
-            // colsTextArr – an array of text strings for each column
-            // colsWidthArr – the width array of each column. The total width cannot be greater than
-            // ((384 / fontsize) << 1)-(number of columns + 1) (calculated in English characters, each Chinese character occupies two English characters, and each width is greater than 0),
-            // colsAlign – Alignment of each column (0 is left, 1 is center, 2 is right)
-            // isContinuousPrint – whether to continue printing the table
-            // 1: continue printing
-            // 0: do not continue printing
-            // Note: The array length of the three parameters should be the same, if the width of colsTextArr[i] is greater than colsWidthArr[i], the text wraps
-            case "printColumnsText":
-              iPosPrinterService.printColumnsText(ArrayToStringArray(call.argument
-                      ("colsTextArray")), ArrayToIntArray(call.argument
-                      ("colsWidthArray")), ArrayToIntArray(call.argument
-                      ("colsAlignmentArray")), call.argument("isContinuousPrint"), callback);
-=======
             case "printColumnsText":
               iPosPrinterService.printColumnsText(call.argument
                       ("colsTextArray"), call.argument
                       ("colsWidthArray"), call.argument
                       ("colsAlignmentArray"), call.argument("isContinuousPrint"), callback);
->>>>>>> d393a8c01257da03feef2c9b26c7b920a5207a71
               break;
 
             // Print a Bitmap Image
@@ -456,23 +430,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 //    return bytes;
 //  }
 //
-<<<<<<< HEAD
-  private String[] ArrayToStringArray(ArrayList data) throws JSONException {
-    String[] strings = new String[data.size()];
-    for(int i = 0; i < data.size(); i++) {
-      strings[i] = data.get(i).toString();
-    }
-    return strings;
-  }
-
-  private int[] ArrayToIntArray(ArrayList data) throws JSONException {
-    int[] numbers = new int[data.size()];
-    for(int i = 0; i < data.size(); i++) {
-      numbers[i] = (int) data.get(i);
-    }
-    return numbers;
-  }
-=======
 //  private String[] ArrayToStringArray(JSONArray data) throws JSONException {
 //    String[] strings = new String[data.length()];
 //    for(int i = 0; i < data.length(); i++) {
@@ -488,7 +445,6 @@ public class IPosPrinterPlugin implements FlutterPlugin, MethodCallHandler, Acti
 //    }
 //    return numbers;
 //  }
->>>>>>> d393a8c01257da03feef2c9b26c7b920a5207a71
 
   public void printData(List<Map<String, Object>> data, IPosPrinterCallback callback) {
     try {

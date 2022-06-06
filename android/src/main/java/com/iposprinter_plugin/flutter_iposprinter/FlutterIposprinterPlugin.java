@@ -1,4 +1,4 @@
-package com.iposprinter_plugin.iposprinter;
+package com.iposprinter_plugin.flutter_iposprinter;
 
 import androidx.annotation.NonNull;
 
@@ -8,8 +8,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
-/** IposprinterPlugin */
-public class IposprinterPlugin implements FlutterPlugin, MethodCallHandler {
+/** FlutterIposprinterPlugin */
+public class FlutterIposprinterPlugin implements FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -18,7 +18,7 @@ public class IposprinterPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "iposprinter");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_iposprinter");
     channel.setMethodCallHandler(this);
   }
 

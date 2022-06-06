@@ -1,6 +1,4 @@
-package com.iposprinter.Utils;
-
-
+package com.iposprinter_plugin.iposprinterservice.Utils;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -13,10 +11,10 @@ public class BitMapUtil{
 
     private static final String TAG = "BitMapUtil";
     /**
-     * Decolorize the image and return it to grayscale
+     * 图片去色,返回灰度图片
      *
-     * @param bmpOriginal incoming image
-     * @return picture after color removal
+     * @param bmpOriginal 传入的图片
+     * @return 去色后的图片
      */
     public static Bitmap toGrayscale(Bitmap bmpOriginal, int progress)
     {
@@ -42,7 +40,7 @@ public class BitMapUtil{
         return bmpGrayscale;
     }
     /**
-     * redraw bmp
+     * 重画bmp
      */
     private static Bitmap remapSizeAndtoGrayscale(Bitmap bitmapOrg,int imgWidth) {
         // 获取这个图片的宽和高
@@ -57,9 +55,9 @@ public class BitMapUtil{
     }
 
     /**
-     *  Get bitmap bitmap data
-     * @param bmp     bitmap
-     * @param width   Bitmap width 0-384
+     *  获取位图点阵数据
+     * @param bmp     位图
+     * @param width   位图宽 0-384
      * @param bmpMode
      * @return
      */
@@ -106,7 +104,7 @@ public class BitMapUtil{
     }
 
     /**
-     * get block data
+     * 获取块数据
      */
     public static byte[] getBitmapBlockData(int blocknum,int bmpWidth,int bmpBlockHeight,Bitmap bmp)
     {
@@ -127,11 +125,11 @@ public class BitMapUtil{
     }
 
     /**
-     * Image binarization, black is 1, white is 0
+     * 图片二值化，黑色是1，白色是0
      *
-     * @param x abscissa
-     * @param y ordinate
-     * @param bmp bitmap
+     * @param x   横坐标
+     * @param y   纵坐标
+     * @param bmp 位图
      * @return
      */
     private static byte px2Byte(int x, int y, Bitmap bmp) {
@@ -149,7 +147,7 @@ public class BitMapUtil{
     }
 
     /**
-     * Image grayscale conversion
+     * 图片灰度的转化
      */
     private static int RGB2Gray(int r, int g, int b) {
         int gray = (int) (0.29900 * r + 0.58700 * g + 0.11400 * b); // 灰度转化公式
@@ -157,7 +155,7 @@ public class BitMapUtil{
     }
 
     /**
-     * Get raster bitmap data
+     * 获取光栅位图数据
      */
     public static byte[] getRasterBmpData(Bitmap bmp, int width, int mode)
     {

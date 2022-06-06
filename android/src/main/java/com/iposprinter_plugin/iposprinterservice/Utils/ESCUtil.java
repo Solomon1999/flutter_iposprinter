@@ -1,27 +1,27 @@
-package com.iposprinter.Utils;
+package com.iposprinter_plugin.iposprinterservice.Utils;
 
 import java.io.UnsupportedEncodingException;
 
 import android.util.Log;
 
-public class ESCUtil{
+public class ESCUtil {
     public static final String TAG = "ESCUtil";
-    public static final byte ESC = 27;  // Escape
-    public static final byte FS = 28;   // Text separator
-    public static final byte GS = 29;   // Group Separator
-    public static final byte DLE = 16;  // Data connection escape
-    public static final byte EOT = 4;   // End of transmission
-    public static final byte ENQ = 5;   // Query Character
-    public static final byte ACK = 6;   // Get Notified
-    public static final byte SP = 32;   // Space
-    public static final byte HT = 9;    // Horizontal Tab
-    public static final byte LF = 10;   // Print and wrap (horizontal positioning)
-    public static final byte CR = 13;   // Homing (carriage return)
-    public static final byte FF = 12;   // Paper feed control
-    public static final byte CAN = 24;  // Cancel printing
+    public static final byte ESC = 27; // 换码
+    public static final byte FS = 28;  //  文本分隔符
+    public static final byte GS = 29; //  组分隔符
+    public static final byte DLE = 16; // 数据连接换码
+    public static final byte EOT = 4;    //传输结束
+    public static final byte ENQ = 5;    //询问字符
+    public static final byte ACK = 6;    //收到通知
+    public static final byte SP = 32;     //空格
+    public static final byte HT = 9;     //横向跳格
+    public static final byte LF = 10;     //打印并换行（水平定位）
+    public static final byte CR = 13;     //归位（回车）
+    public static final byte FF = 12;     //走纸控制
+    public static final byte CAN = 24;    //取消打印
 
     /**
-     * Get printer status
+     *获取打印机状态
      */
     public static byte[] getPrinterStatus()
     {
@@ -33,7 +33,7 @@ public class ESCUtil{
     }
 
     /**
-     * Printer initialization
+     * 打印机初始化
      *@return
      */
     public static byte[] init_printer()
@@ -45,8 +45,8 @@ public class ESCUtil{
     }
 
     /**
-     * Newline
-     * @param lineNum Number of newlines
+     *换行
+     * @param lineNum 换行数
      * @return
      */
     public static byte[] nextLines(int lineNum)
@@ -60,7 +60,7 @@ public class ESCUtil{
     }
 
     /**
-     * tab
+     *跳格
      * @return
      */
     public static byte[] HTCmd()
@@ -70,8 +70,7 @@ public class ESCUtil{
     }
 
     /**
-     * Set the character right spacing unit pixel,
-     * which is an integer multiple of 8
+     * 设置字符右间距单位像素点，为8的整数倍
      * @return
      */
     public static byte[] setRightSpaceChar(byte n)
@@ -84,7 +83,7 @@ public class ESCUtil{
     }
 
     /**
-     * print underline mode settings
+     * 打印下划线模式设置
      *@return
      */
     public static byte[] printUnderlineModeEn(boolean en){
@@ -99,8 +98,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set absolute print position
-     *@param n The unit pixel is an integer multiple of 8
+     * 设置绝对打印位置
+     *@param n 单位像素点 为8的整数倍
      *@return
      */
     public static byte[]  absolutePrintPosition(int n)
@@ -114,7 +113,7 @@ public class ESCUtil{
     }
 
     /**
-     * print bitmap data
+     * 打印位图数据
      */
     public static byte[] printBmpData()
     {
@@ -123,8 +122,8 @@ public class ESCUtil{
     }
 
     /**
-     * Underline settings
-     * @param n  0, 1 , 2 or 48, 49, 50
+     * 下划线设置
+     * @param n  0, 1 , 2或者 48, 49, 50
      * @return
      */
     public static byte[] underlineWithWidthOn(byte n)
@@ -137,7 +136,7 @@ public class ESCUtil{
     }
 
     /**
-     * set default row height
+     * 设置默认行高
      */
     public static byte[] defaultLineHeight()
     {
@@ -149,8 +148,8 @@ public class ESCUtil{
 
 
     /**
-     * set row height
-     * @param n line height pixels
+     * 设置行高
+     * @param n 行高像素点
      * @return
      */
     public static byte[] setLineHeight(byte n)
@@ -162,8 +161,8 @@ public class ESCUtil{
         return result;
     }
     /**
-     * Shift right n columns horizontally
-     * @param cols Unit character width (including right spacing)
+     * 水平方向右移n列
+     * @param cols 单位字符宽度（包含右间距）
      * @return
      */
     public static byte[] set_HT_position(byte[] cols) {
@@ -178,7 +177,7 @@ public class ESCUtil{
     }
 
     /**
-     * Double width, double height mode
+     * 倍宽，倍高模式
      * @return
      */
     public static byte[] widthAndheightMode(byte mode)
@@ -191,7 +190,7 @@ public class ESCUtil{
     }
 
     /**
-     * Bold mode not supported yet
+     * 加粗模式  暂不支持
      * @return
      */
     public static byte[] boldOnOff(byte mode)
@@ -204,7 +203,7 @@ public class ESCUtil{
     }
 
     /**
-     * print and feed n dot lines
+     * 打印并走纸n点行
      */
     public static byte[] performPrintAndFeedPaper(byte n)
     {
@@ -216,7 +215,7 @@ public class ESCUtil{
     }
 
     /**
-     * print and feed n lines character line character height
+     * 打印并走纸n行 字符行字符高度
      */
     public static byte[] performPrintFeedPaperLines(byte n)
     {
@@ -228,8 +227,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set the horizontal relative print position
-     * @param n The number of ASCII characters in the current font size
+     * 设置横向相对打印位置
+     * @param n 当前字体大小下ASCII字符个数
     */
     public static byte[]  relativePrintPosition(int n)
     {
@@ -241,7 +240,7 @@ public class ESCUtil{
         return result;
     }
     /**
-     * alignment mode
+     * 对齐模式
      * @return
      */
     public static byte[] alignMode(byte align) {
@@ -254,23 +253,7 @@ public class ESCUtil{
 
 
     /**
-     * Font (type) settings
-     * @param type :0:A  1:B
-     * @return
-     */
-    public static byte[] fontTypeSet(byte type){
-
-        byte[] result = new byte[3];
-
-        result[0] = ESC;
-        result[1] = 77;
-        result[2] = type;
-        return result;
-    }
-
-
-    /**
-     * Font (size) settings
+     * 字体（大小）设置
      * @param size :0x00:16  0x11:24   0x22:32  0x33:48
      * @return
      */
@@ -286,8 +269,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set the print left margin
-     *@param n The unit pixel is an integer multiple of 8
+     * 设置打印左边距
+     *@param n 单位像素点 为8的整数倍
      *@return
      */
     public static byte[]  printLeftMargin(int n)
@@ -301,8 +284,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set the print area width
-     *@param n The unit pixel is an integer multiple of 8
+     * 设置打印区域宽度
+     *@param n 单位像素点 为8的整数倍
      *@return
      */
     public static byte[]  printAreaWidth(int n)
@@ -315,7 +298,9 @@ public class ESCUtil{
         return result;
     }
 
-    // Set Chinese character mode
+    /**
+     * 设置汉字模式
+     */
     public static byte[] selectChineseMode()
     {
         byte[] result = new byte[2];
@@ -324,8 +309,9 @@ public class ESCUtil{
         return result;
     }
 
-
-    // Cancel Kanji mode
+    /**
+     * 取消汉字模式
+     */
     public static byte[] CancelChineseMode()
     {
         byte[] result = new byte[2];
@@ -334,7 +320,11 @@ public class ESCUtil{
         return result;
     }
 
-    // Set Kanji Code System
+    /**
+     * 编码系统选择
+     * @param mode 0,48 :系统默认  1，49 ：GBK
+     * @return
+     */
     public static byte[] selectCharCodeSystem(byte mode) {
         byte[] result = new byte[3];
         result[0] = FS;
@@ -344,39 +334,17 @@ public class ESCUtil{
     }
 
     /**
-     * Select char code table
-     * @param mode 0,48 :System default 1, 49: GBK
-     * @return
+     * 条码打印
      */
-    public static byte[] selectCharCodeTable(byte mode) {
-        byte[] result = new byte[3];
-        result[0] = ESC;
-        result[1] = 116;
-        result[2] = mode;
-        return result;
-    }
-
-    /**
-     * Intl Coding system selection
-     * @param mode 0,48 :System default 1, 49: GBK
-     * @return
-     */
-    public static byte[] selectIntlCharCodeSystem(byte mode) {
-        byte[] result = new byte[3];
-        result[0] = ESC;
-        result[1] = 82;
-        result[2] = mode;
-        return result;
-    }
-
-    // Barcode Printing
     public static byte[] barcodePrint()
     {
         byte[] result = new byte[]{GS,107};
         return result;
     }
 
-    // Set the print position of HRI characters
+    /**
+     * 设置HRI字符的打印位置
+     */
     public static byte[] setHRIPosition(int position)
     {
         byte[] result = new byte[3];
@@ -387,8 +355,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set barcode height
-     * @param height :1-16 Unit 24 pixels
+     * 设置条码高度
+     * @param height :1-16 单位24个像素点
      * @return
      */
 
@@ -402,8 +370,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set barcode width
-     * @param width ：1-16 units of 24 pixels
+     * 设置条码宽度
+     * @param width ：1-16 单位24个像素点
      * @return
      */
     public static byte[] setBarcodeWidth(int width)
@@ -416,7 +384,7 @@ public class ESCUtil{
     }
 
     /**
-     * Generate barcode verification code
+     * 生成条码校验码
      */
     public static int barcodeCheckCode(String codedata)
     {
@@ -448,7 +416,7 @@ public class ESCUtil{
         return checkCode;
     }
     /**
-     * Generate barcode data
+     * 生成条码数据
      */
     public static byte[] barcodeData(int mode,String data)
     {
@@ -510,8 +478,8 @@ public class ESCUtil{
     }
 
     /**
-     * Set QR code size
-     * @param size 1-16 units of 24 pixels
+     * 设置二维码大小
+     * @param size 1-16 单位 24像素点
      */
     public static byte[] setQRsize(int size)
     {
@@ -523,7 +491,7 @@ public class ESCUtil{
 
 
     /**
-     * Set QR code error correction level
+     * 设置二维码纠错等级
      * @param corr
      */
     public static byte[] setQRCorrectionLevel(int corr)
@@ -534,7 +502,7 @@ public class ESCUtil{
     }
 
     /**
-     * Store QR code data
+     * 存储二维码数据
      */
     public static byte[] cacheQRData(byte[] mQRData)
     {
@@ -549,8 +517,7 @@ public class ESCUtil{
     }
 
     /**
-     * Print the stored QR code
-     * (other cached data is cleared）
+     * 打印已存储的二维码（其它缓存数据清空）
      */
     public static byte[] printCacheQRdata()
     {
@@ -559,7 +526,7 @@ public class ESCUtil{
     }
 
     /**
-     * Bitmap packet, header information
+     * 位图数据包，包头信息
      */
     public static byte[] bmpCmdHead(int mode, int bitmapWidth)
     {
@@ -571,7 +538,7 @@ public class ESCUtil{
     }
 
     /**
-     * Raster bitmap header information
+     * 光栅位图头信息
      */
     public static byte[] rasterBmpHead(int mode, int widthBytes,int height)
     {
@@ -585,7 +552,7 @@ public class ESCUtil{
     }
 
     /**
-     * Integrate print data
+     * 整合打印数据
      * @param byteList
      * @return
      */

@@ -1,4 +1,4 @@
-package com.iposprinter.Utils;
+package com.iposprinter_plugin.iposprinterservice.Utils;
 
 /**
  * Created by Administrator on 2017/7/25.
@@ -11,8 +11,7 @@ import java.lang.ref.SoftReference;
 
 /**
  * Created by liuchangfa on 2016.
- * Handler creation tool,
- * using soft references to prevent memory leaks
+ * handler创建工具，利用软引用防止内存泄露
  */
 
 public class HandlerUtils {
@@ -20,8 +19,7 @@ public class HandlerUtils {
     private static final long serialVersionUID = 0L;
 
     /**
-     * Inherit this interface where the handler is used,
-     * and then give the instantiated reference to the instantiated handler
+     * 在使用handler的地方继承此接口，然后把实例化的引用给实例化的handler
      */
     public interface IHandlerIntent {
         void handlerIntent(Message message);
@@ -29,7 +27,7 @@ public class HandlerUtils {
 
     public static final class MyHandler extends Handler
     {
-        private SoftReference<IHandlerIntent> owner;
+        public SoftReference<IHandlerIntent> owner;
 
         public MyHandler(IHandlerIntent t) {
             owner = new SoftReference<>(t);

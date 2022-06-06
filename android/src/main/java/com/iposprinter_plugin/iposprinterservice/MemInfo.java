@@ -1,4 +1,4 @@
-package com.iposprinter.iposprinterservice;
+package com.iposprinter_plugin.iposprinterservice;
 
 import android.app.ActivityManager;
 import android.content.Context;

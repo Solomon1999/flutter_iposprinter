@@ -1,9 +1,7 @@
-package com.iposprinter.Utils;
-
+package com.iposprinter_plugin.iposprinterservice.Utils;
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;

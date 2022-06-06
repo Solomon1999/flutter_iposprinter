@@ -1,4 +1,4 @@
-package com.iposprinter.iposprinter_example;
+package com.iposprinter_plugin.flutter_iposprinter_example;
 
 import io.flutter.embedding.android.FlutterActivity;
 

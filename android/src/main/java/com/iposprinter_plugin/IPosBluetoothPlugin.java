@@ -10,7 +10,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,21 +18,19 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.iposprinter.Utils.BitMapUtil;
-import com.iposprinter.Utils.BluetoothUtil;
-import com.iposprinter.Utils.ESCUtil;
-import com.iposprinter.ThreadPoolManager;
+import com.iposprinter_plugin.iposprinterservice.*;
+import com.iposprinter_plugin.iposprinterservice.Utils.BitMapUtil;
+import com.iposprinter_plugin.iposprinterservice.Utils.BluetoothUtil;
+import com.iposprinter_plugin.iposprinterservice.Utils.ESCUtil;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -41,12 +38,10 @@ import java.util.Random;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
-import io.flutter.embedding.engine.plugins.service.ServiceAware;
-import io.flutter.embedding.engine.plugins.service.ServicePluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.plugin.common.EventChannel.EventSink;
+import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.Result;
@@ -498,9 +493,6 @@ public class IPosBluetoothPlugin implements FlutterPlugin,
             byte[] data = ESCUtil.byteMerger(new byte[][] {
                     ESCUtil.init_printer(),
                     ESCUtil.selectChineseMode(),
-                    ESCUtil.fontTypeSet((byte) 0),
-                    ESCUtil.selectCharCodeTable((byte) 0),
-                    ESCUtil.selectIntlCharCodeSystem((byte) 0)
             });
             out.write(data, 0, data.length);
             out.close();

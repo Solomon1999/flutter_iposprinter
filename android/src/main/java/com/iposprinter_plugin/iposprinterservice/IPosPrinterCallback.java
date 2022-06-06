@@ -2,35 +2,35 @@
  * This file is auto-generated.  DO NOT MODIFY.
  * Original file: D:\\AndroidStudioProjects\\IposPrinterTestDemo\\app\\src\\main\\aidl\\com\\iposprinter\\iposprinterservice\\IPosPrinterCallback.aidl
  */
-package com.iposprinter.iposprinterservice;
+package com.iposprinter_plugin.iposprinterservice;
 /**
  * 打印服务执行结果的回调
  */
 public interface IPosPrinterCallback extends android.os.IInterface
 {
 /** Local-side IPC implementation stub class. */
-public static abstract class Stub extends android.os.Binder implements com.iposprinter.iposprinterservice.IPosPrinterCallback
+public static abstract class Stub extends android.os.Binder implements IPosPrinterCallback
 {
-private static final java.lang.String DESCRIPTOR = "com.iposprinter.iposprinterservice.IPosPrinterCallback";
+private static final java.lang.String DESCRIPTOR = "IPosPrinterCallback";
 /** Construct the stub at attach it to the interface. */
 public Stub()
 {
 this.attachInterface(this, DESCRIPTOR);
 }
 /**
- * Cast an IBinder object into an com.iposprinter.iposprinterservice.IPosPrinterCallback interface,
+ * Cast an IBinder object into an IPosPrinterCallback interface,
  * generating a proxy if needed.
  */
-public static com.iposprinter.iposprinterservice.IPosPrinterCallback asInterface(android.os.IBinder obj)
+public static IPosPrinterCallback asInterface(android.os.IBinder obj)
 {
 if ((obj==null)) {
 return null;
 }
 android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
-if (((iin!=null)&&(iin instanceof com.iposprinter.iposprinterservice.IPosPrinterCallback))) {
-return ((com.iposprinter.iposprinterservice.IPosPrinterCallback)iin);
+if (((iin!=null)&&(iin instanceof IPosPrinterCallback))) {
+return ((IPosPrinterCallback)iin);
 }
-return new com.iposprinter.iposprinterservice.IPosPrinterCallback.Stub.Proxy(obj);
+return new IPosPrinterCallback.Stub.Proxy(obj);
 }
 @Override public android.os.IBinder asBinder()
 {
@@ -64,7 +64,7 @@ return true;
 }
 return super.onTransact(code, data, reply, flags);
 }
-private static class Proxy implements com.iposprinter.iposprinterservice.IPosPrinterCallback
+private static class Proxy implements IPosPrinterCallback
 {
 private android.os.IBinder mRemote;
 Proxy(android.os.IBinder remote)

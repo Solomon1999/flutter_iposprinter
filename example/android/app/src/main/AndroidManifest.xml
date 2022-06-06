@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.iposprinter.iposprinter_example">
+    package="com.iposprinter_plugin.iposprinter_example">
    <application
         android:label="iposprinter_example"
         android:name="${applicationName}"

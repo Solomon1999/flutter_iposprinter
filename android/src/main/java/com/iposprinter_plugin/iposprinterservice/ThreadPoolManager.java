@@ -1,4 +1,4 @@
-package com.iposprinter.iposprinterservice;
+package com.iposprinter_plugin.iposprinterservice;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 public class ThreadPoolManager {
     private ExecutorService service;
 
-    private ThreadPoolManager() {
+    public ThreadPoolManager() {
         int num = Runtime.getRuntime().availableProcessors() * 20;
         service = Executors.newFixedThreadPool(num);
     }
